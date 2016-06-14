@@ -7,7 +7,7 @@ safe: true
 
 # presonal config
 title: aven's Blog
-comments: disqus
+comments: duosuo
 
 author:
   name: aven92
