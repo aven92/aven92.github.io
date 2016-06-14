@@ -1,0 +1,24 @@
+markdown: kramdown
+permalink: /:title.html
+url: http://aven92.github.io
+lsi: true
+rouge: true
+safe: true
+
+# presonal config
+title: aven92's Blog
+comments: duoshuo
+
+author:
+  name: aven92
+  nickname: aven92
+  gmail: avenpan92@gmail.com
+  site: http://aven92.github.io
+
+seo: 
+  keyword: 
+  description: 
+config:
+  js_dir:
+  img_dir:
+  css_dir:
