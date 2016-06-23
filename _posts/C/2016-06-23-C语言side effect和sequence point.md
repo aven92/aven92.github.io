@@ -46,7 +46,7 @@ Accessing a volatile object, modifying an object, modifying a file, or calling a
     int main() {
         int i = 12 ;
         i = i-- ;
-        printf("the i is %d/n", i) ;
+        printf( "the i is %d/n" , i ) ;
         return 0 ;   
     }
 
