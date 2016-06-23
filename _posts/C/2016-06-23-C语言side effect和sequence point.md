@@ -14,10 +14,10 @@ categories: C
 
 有了序列点的概念，我们下面来分析一下一个很常见的错误 :
 
-    int x = 1, y;
-    y = x++ + x++;
+    int x = 1, y ;
+    y = x++ + x++ ;
 
-这里 y = x++ + x++ 是完整表达式，而 x++ 是它的子表达式。这个完整表达式运算结束的那一点是一个序列点，int x = 1, y; 中的 ; 也是一个序列点。也就是说 x++ + x++ 位于两个序列点之间。标准规定，在两个序列点之间，一个对象所保存的值最多只能被修改一次。但是我们清楚可以看到，上面这个例子中，x 的值在两个序列点之间被修改了两次。这显然是错误的！这段代码在不同的编译器上编译可能会导致 y 的值有所不同。比较常见的结果是 y 的值最后被修改为 2 或者 3 。在此，我不打算就这个问题作更深入的分析，各位只要记住这是错误的，别这么用就可以了。有兴趣的话，可以看看以下列出的相关资料。
+这里 y = x++ + x++ 是完整表达式，而 x++ 是它的子表达式。这个完整表达式运算结束的那一点是一个序列点，int x = 1, y ; 中的 ; 也是一个序列点。也就是说 x++ + x++ 位于两个序列点之间。标准规定，在两个序列点之间，一个对象所保存的值最多只能被修改一次。但是我们清楚可以看到，上面这个例子中，x 的值在两个序列点之间被修改了两次。这显然是错误的！这段代码在不同的编译器上编译可能会导致 y 的值有所不同。比较常见的结果是 y 的值最后被修改为 2 或者 3 。在此，我不打算就这个问题作更深入的分析，各位只要记住这是错误的，别这么用就可以了。有兴趣的话，可以看看以下列出的相关资料。
 
 C 语言标准对副作用和序列点的定义如下：
 Accessing a volatile object, modifying an object, modifying a file, or calling a function that does any of those operations are all side effects, which are changes in the state of the execution environment. Evaluation of an expression may produce side effects. At certain specified points in the execution sequence called sequence points, all side effects of previous evaluations shall be complete and no side effects of subsequent evaluations shall have taken place.
@@ -44,10 +44,10 @@ Accessing a volatile object, modifying an object, modifying a file, or calling a
     $ vim test_sequence_point.c 
     ＃include <stdio.h> 
     int main() {
-        int      i = 12;
-        i = i--;
-        printf("the i is %d/n", i);
-        return 0;   
+        int i = 12 ;
+        i = i-- ;
+        printf("the i is %d/n", i) ;
+        return 0 ;   
     }
 
     $ gcc -Wsequence-point test_sequence_point.c
