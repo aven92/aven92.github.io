@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Linux下MongoDB安装和配置
+title: Linux 下 MongoDB 安装和配置
 categories: MongoDB
 ---
 
@@ -84,7 +84,7 @@ categories: MongoDB
     verbose = false
     objcheck = false
 
-# 4.启动
+# 4. 启动
 
     $ sudo systemctl stop firewalld.service
     $ sudo systemctl disable firewalld.service
