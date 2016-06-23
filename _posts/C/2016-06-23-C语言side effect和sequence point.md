@@ -41,7 +41,7 @@ Accessing a volatile object, modifying an object, modifying a file, or calling a
 编译时可以加上 " -Wsequence-point " 让编译器帮我们检查可能的关于检查点的错误。
 
     $ vim test_sequence_point.c 
-    ＃include  
+    ＃include <stdio.h> 
     int main() {
         int      i = 12;
         i = i--;
@@ -50,5 +50,6 @@ Accessing a volatile object, modifying an object, modifying a file, or calling a
     }
 
     $ gcc -Wsequence-point test_sequence_point.c
-    test_sequence_point.c: In function `main':  test_sequence_point.c:10: warning: operation on `i' may be undefined
+    test_sequence_point.c: In function `main':  
+    test_sequence_point.c:10: warning: operation on `i' may be undefined
 
