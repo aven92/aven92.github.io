@@ -1,0 +1,84 @@
+---
+layout: post
+title: C语言类型转换
+categories: C
+---
+
+# 1. Integer Promotion
+
+  在一个表达式中，凡是可以使用int或unsigned int类型做右值的地方也都可以使用有符号或无符号的char型、short型和Bit-field。如果原始类型的取值范围都能用int型表示，则其值被提升为int型，如果表示不了就提升为unsigned int型，这称为Integer Promotion。做IntegerPromotion只影响上述几种类型的值，对其它类型无影响。C99规定Integer Promotion适用于以
+
+下几种情况：
+
+1、如果一个函数的形参类型未知，例如使用了Old Style C风格的函数声明，或者函数的参数列表中有...，那么调用函数时要对相应的实参做Integer Promotion，此外，相应的实参如果是float型的也要被提升为double型，这条规则称为Default Argument Promotion。我们知道printf的参数列表中有...，除了第一个形参之外，其它形参的类型都是未知的，因此我们在调用printf("%c",'A')时，'A'其实被提升为int型之后才传给了printf。
+
+2、算术运算中的类型转换。两个算术类型的操作数做算术运算，比如a * b，如果两边操作数的类型不同，编译器会自动做类型换，使两边类型相同之后才做运算，这称为Usual Arithmetic Conversion，转换过程中有一步就是Integer Promotion，我们先举个例子来理解这一步，至于Usual Arithmetic Conversion的完整规则将在下面详细解释。
+
+    unsigned char c1 = 255, c2 = 2;int n = c1 + c2;
+
+计算表达式c1 + c2的过程其实是先把c1和c2提升为int类型然后相加（unsigned char的取值范围是0~255，完全可以用int表示，所以不需要提升为unsigned int），整个表达式的值也是int型，最后的结果是257。假如没有这个提升的过程，c1 + c2就溢出了，最后的结果应该是1。
+
+显然，+-*/%这些算术运算以及> < >= <= == !=这些比较运算都需要做Usual Arithmetic Conversion，因为都要求两边操作数的类型一致，此外还有哪些运算也需要做Usual Arithmetic Conversion呢？我们将在下一章做个总结。
+
+3、单目运算符++、--、~只有一个操作数，移位运算符<<、>>两边的操作数类型不要求一致，因此这些运算不需要做Usual Arithmetic Conversion，但也需要做Integer Promotion。
+
+# 2. Usual Arithmetic Conversion
+
+现在详细解释一下Usual Arithmetic Conversion的规则：
+
+1. 如果有一边的类型是long double，则把另一边也转成long double。
+
+2. 否则，如果有一边的类型是double，则把另一边也转成double。
+
+3. 否则，如果有一边的类型是float，则把另一边也转成float。
+
+4. 否则，两边应该都是整数类型，首先按上一小节讲过的规则对a和b做Integer Promotion，然后如果类型仍不相同，则需要继续转换。首先规定char、short、int、long、long long的转换级别（Integer Conversion Rank）一个比一个高，同一类型的有符号和无符号数具有相同的Rank，然后有如下转换规则：
+
+a. 如果两边都是有符号数，或者都是无符号数，那么较低Rank的类型转换成较高Rank的类型。例如unsigned int和unsigned long做算术运算时都转成unsigned long。
+
+b. 否则，如果一边是无符号数另一边是有符号数，无符号数的Rank不低于有符号数的Rank，则把有符号数转成另一边的无符号类型。例如unsigned long和int做算术运算时都转成unsigned long，unsigned long和long做算术运算时也都转成unsigned
+
+long。
+
+c. 剩下的情况就是：一边是无符号数另一边是有符号数，并且无符号数的Rank低于有符号数的Rank。这时又分为两种情况，如果这个有符号数类型能够覆盖这个无符号数类型的取值范围，则把无符号数转成另一边的有符号类型。例如遵循LP64的平台
+
+上unsigned int和long在做算术运算时都转成long。
+
+d. 否则，也就是这个符号数类型不足以覆盖这个无符号数类型的取值范围，则把两边都转成两者之中较高Rank的无符号类型。例如遵循ILP32的平台上unsigned int和long在做算术运算时都转成unsigned long。可见有符号和无符号整数的转换规则是十分复杂的，虽然这是有明确定义的，不属于阴暗角落，但为了程序的可读性，不应该依赖这些规则来写代码。我讲这些规则，不是为了让你用的，而是为了让你在出错时更容易分析错误原因，所以这些规则不需要记住，但要知道有这么回事，以便用到的时候能找到这一段。
+
+# 3. 由赋值产生的类型转换
+
+如果赋值或初始化时等号两边的类型不相同，则编译器会把等号右边的类型转换成等号左边的类型再做赋值。例如int c = 3.14;，编译器会把右边的double型转成int型再赋给变量c。我们知道，函数调用传参的过程相当于定义形参并且用实参对其做初始化，函数返回的过程相当于定义一个临时变量并且用return的表达式对其做初始化，所以由赋值产生的类型转换也适用于这两种情况。例如一个函数的原型是int foo(int, int);，则调用foo(3.1, 4.2)时会自动把两个double型的实参转成int型赋给形参，如果这个函数定义中有返回语句return 1.2;，则返回值1.2会自动转成int型再返回。在函数调用和返回过程中发生的类型转换往往容易被忽视，因为函数原型和函数调用并没有写在一起。例如char c = getchar();，看到这一句，往往想当然地认为getchar的返回值是char型的，而事实上getchar的返回值是int型的，这样赋值会引起一个类型转换，我们以后会详细解释使用这个函数需要注意的问题。
+
+# 4. 强制类型转换
+
+以上三种情况通称为隐式类型转换（Implicit Conversion，或者叫Coercion），编译器根据它自己的一套规则将一种类型自动转换为另一种类型。除此之外，程序员也可以通过类型转换运算符（Cast Operator）自己规定某个值要转换成何种类型，这称为显式类型转换（Explicit Conversion）或强制类型转换（Type Cast）。例如计算表达式(double)3 + i，首先将整数3强制转换成double型3.0，然后和整型变量i相加，这时适用Usual Arithmetic Conversion规则，首先把i也转成double型，然后两者相加，最后整个表达式的值也是double型的。这里的(double)就是一个类型转换运算符，这种运算符由一个类型名加()括号组成，后面的3是这个运算符的操作数。
+
+# 5. 编译器如何处理类型转换
+
+以上几小节介绍了哪些情况会产生类型转换，并且明确了每种情况下应该把什么类型转成什么类型，至于这两种类型之间的转换具体怎么做则是本节的内容。本节的主要内容出自[Standard C]。在两种类型之间做转换，转换结果将取决于两种类型的精度。那么类型的精度怎么定义呢？我们分三种情况讨论：
+
+1. 精度是N的有符号整数类型应该用N个Bit表示，取值范围至少应该覆盖(-2N-1, 2N-1)。我们用()括号表示开区间，不包含端点，用[]括号表示闭区间，包含端点。例如signed char型用8个Bit表示，按2's Complement表示法的取值范围是[-128, 127]，也可以说是覆盖了(-128, 128)，所以这种类型的精度是8。
+
+2. 精度是N的无符号整数类型应该用N个Bit表示，取值范围是[0, 2N-1]。
+
+3. 精度是N的浮点数类型的取值范围至少应该覆盖(-2N-1, 2N-1)的整数值。现在要把一个精度是M的类型（值为X）转换成一个精度是N的类型，所有可能的情况如下表所示。
+
+表 1. 如何做类型转换
+
+| 待转换的类型 | N < M的情况 | N == M的情况 | N > M的情况 |
+|   :-----:    |   :-----:   |   :----:     |   :----:    |
+| signed integer to signed integer | discard m.s. M-N bits (can overflow)  | same value | same value |
+| unsigned integer to signed integer | if (X < 2N-1) same value else impl.-def. (can overflow) | if (X < 2N-1) same value else impl.-def. (can overflow)  | same value |
+| floating-point to signed integer | if (\|X\| < 2N-1) trunc(X) else imple.-def. (can overflow) | if (\|X\| < 2N-1) trunc(X) else imple.-def. (can overflow) | if (\|X\| < 2N-1) trunc(X) else imple.-def. (can overflow) |
+| signed integer to unsigned integer | if (0 <= X) X % 2N else impl.-def. | if (0 <= X) same value else X + 2N | if (0 <= X) same value else X + 2N |
+| unsigned integer to unsigned integer | X % 2N | same value | same value |
+| floating-point to unsigned integer | if (0 <= X < 2N) trunc(X) else imple.-def. (can overflow) | if (0 <= X < 2N) trunc(X) else imple.-def. (can overflow) | if (0 <= X < 2N) trunc(X) else imple.-def. (can overflow) |
+| signed integer to floating-point| keep sign, keep m.s. N-1 bits | same value | same value |
+| unsigned integer to floating-point | + sign, keep m.s. N-1 bits | + sign, keep m.s. N-1 bits | same value |
+| floating-point to floating-point |  keep m.s. N-1 bits (can overflow) | same value | same value |
+
+上表中的一些缩写说明如下：impl.-def.表示Implementation-defined；m.s. bit表示MostSignificant Bit；trunc(X)表示取X的整数部分，即Truncate Toward Zero；X % Y就是取模，上表中用到取模运算时X和Y都是正整数。同样地，这个表不是为了让你故意去用的，而是为了让你出错时分析错误原因的。下面举几个例子说明这个表的用法。比如要把float型转short型，对应表中的floating-point to signed integer一行，可以看到，不管两种类型的精度如何，处理方式是一样的，如果float类型的值在(-32768.0, 32768.0)之间，则截掉小数部分就可以了，如果float类型的值超出了这个范围，则转换结果是未明确定义的，有可能会产生溢出，例如对于short s = 32768.4;这个语句gcc会报警告。再比如把int类型转换成unsigned short类型，对应表中的unsigned integer to unsignedinteger一行，如果int类型的值是正的，则把它除以216取模，其实就是取它的低16位，如果int类型的值是负的，则转换结果是未明确定义的。再比如把int类型转换成short类型，对应表中的第一行signed integer to signed integer，把int类型值的高16位丢掉（这里的m.s.包括符号位在内，上表中另外几处提到的m.s.应该是不算符号位在内），只留低16位，这种情况也有可能溢出，例如对于short s = -32769;这个语句gcc会报警告，而对于short s = -32768;则不会报警告。最后一个例子，把short型转换成int型，仍然对应表中第一行，转换之后应该是same value。那怎么维持值不变呢？是不是在高位补16个0就行了呢？如果short型的值是-1，按补码表示就是十六进制ffff，要转成int型的-1需要变成ffffffff，因此需要在高位补16个1而不是16个0。换句
+
+话说，要维持值不变，在高位补1还是补0取决于原来的符号位，这称为符号扩展（Sign Extension）。
+
