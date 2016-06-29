@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Linux 下 MongoDB 安装和配置
+title: Linux下MongoDB安装和配置
 categories: MongoDB
 ---
 
