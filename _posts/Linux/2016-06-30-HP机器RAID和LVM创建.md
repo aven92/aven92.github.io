@@ -6,7 +6,7 @@ categories: Linux
 
 <!--more-->
 
-# 1.环境
+## 1.环境
 
 	[root@localhost ~]# uname -a
 	Linux localhost.localdomain 2.6.32-220.el6.x86_64 #1 SMP Tue Dec 6 19:48:22 GMT 2011 x86_64 x86_64 x86_64 GNU/Linux
@@ -26,13 +26,13 @@ categories: Linux
 	        Runtime Size: 64 kB
 	        ROM Size: 8192 kB
 
-# 2.安装HP磁盘管理工具
+## 2.安装HP磁盘管理工具
 
 	[root@localhost ~]# rpm -ivh http://mirror.nforce.com/pub/software/raidtools/hpacucli-tool/hpacucli-9.40-12.0.x86_64.rpm
 
 
-# 3.配置RAID
-## (1) 产看当前RAID状态
+## 3.配置RAID
+### (1) 产看当前RAID状态
 
 	[root@localhost ~]# hpacucli ctrl all show status
 
@@ -65,7 +65,7 @@ categories: Linux
 
 发现有两块盘做了RAID 1, 剩下4块盘没有做RAID。。
 
-# (2) 创建RAID
+## (2) 创建RAID
 
 	[root@localhost ~]# hpacucli ctrl slot=0 create type=ld drives=1I:1:3,1I:1:4,2I:1:5,2I:1:6 raid=1+0
 	[root@localhost ~]# hpacucli ctrl all show config
@@ -95,13 +95,13 @@ categories: Linux
 
 为剩下的4块盘创建了一个RAID 1+0
 
-# 4.配置LVM
-## (1) 创建分区
+## 4.配置LVM
+### (1) 创建分区
 
 	[root@localhost ~]# cfdisk /dev/sdb
 
 
-## (2) 创建物理卷
+### (2) 创建物理卷
 
 	[root@localhost ~]# pvs
 	  PV         VG       Fmt  Attr PSize   PFree
@@ -114,7 +114,7 @@ categories: Linux
 	  /dev/sdb1           lvm2 ---    1.09t 1.09t
 
 
-## (3) 将创建的物理卷添加到卷组
+### (3) 将创建的物理卷添加到卷组
 
 	[root@localhost ~]# vgs
 	  VG       #PV #LV #SN Attr   VSize   VFree
@@ -126,7 +126,7 @@ categories: Linux
 	  VolGroup   2   3   0 wz--n- 1.64t 1.09t
 
 
-## (4) 创建逻辑卷
+### (4) 创建逻辑卷
 
 	[root@localhost ~]# lvs
 	  LV      VG       Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
@@ -143,8 +143,8 @@ categories: Linux
 	  lv_swap VolGroup -wi-ao---- 128.14g
 
 
-# 5.格式化使用
-## (1) 格式化
+## 5.格式化使用
+### (1) 格式化
 
 	[root@localhost ~]#  mkfs.ext4 /dev/VolGroup/lv_data
 	mke2fs 1.41.12 (17-May-2010)
@@ -180,7 +180,7 @@ categories: Linux
 	Pass 5: Checking group summary information
 	/dev/VolGroup/lv_data: 11/67108864 files (0.0% non-contiguous), 4262937/268435456 blocks
 
-## (2) 挂载
+### (2) 挂载
 
 	[root@localhost ~]# df -h
 	Filesystem            Size  Used Avail Use% Mounted on
@@ -204,7 +204,7 @@ categories: Linux
 	                     1008G  200M  957G   1% /data
 
 
-# 6.参考
+## 6.参考
 
 http://www.datadisk.co.uk/html_docs/redhat/hpacucli.htm
 

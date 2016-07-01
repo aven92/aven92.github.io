@@ -6,7 +6,7 @@ categories: Linux
 
 <!--more-->
 
-# 准备
+## 准备
   新版本的 MegaCli-1.01.24-0.i386.rpm （下载地址：http://www.lsi.com/downloads/Public/MegaRAID%20Common%20Files/8.02.16_MegaCLI.zip ）该包会把程序安装在/opt下，当然也可以自定义安装目录，例如：rpm --relocate /opt/=/usr/sbin/ -i MegaCli-1.01.24-0.i386.rpm （即把安装目录 /opt 替换成 /usr/sbin）。
 
 (linux文件夹下有个MegaCli文件里面有I386 RPM）
@@ -35,7 +35,7 @@ categories: Linux
     显示所有适配器信息    #MegaCli -AdpAllInfo –aAll 
     查看Cache 策略设置    # MegaCli -cfgdsply -aALL |grep Polic
 
-# 1.查看所有物理磁盘信息
+## 1.查看所有物理磁盘信息
 
 	# MegaCli -PDList -aALL
 	Adapter #0
@@ -55,7 +55,7 @@ categories: Linux
 	SAS Address(1): 0x0 
 	Inquiry Data: SEAGATE ST3146855SS     S5273LN4Y1X0 .....
 
-# 2.查看磁盘缓存策略
+## 2.查看磁盘缓存策略
 
 	MegaCli -LDGetProp -Cache -L0 -a0
 	Adapter 0-VD 0: Cache Policy:WriteBack, ReadAheadNone, Direct 
@@ -68,7 +68,7 @@ categories: Linux
 	or MegaCli -LDGetProp -DskCache -LALL -aALL
 	Adapter 0-VD 0: Disk Write Cache : Disk's Default Adapter 0-VD 1: Disk Write Cache : Disk's Default
 
-# 3.设置磁盘缓存策略
+## 3.设置磁盘缓存策略
 缓存策略解释：
 
 	WT    (Write through 
@@ -88,27 +88,27 @@ categories: Linux
 	enable / disable disk cache 
 	MegaCli -LDSetProp -EnDskCache|-DisDskCache -L0 -a0
 
-# 4.创建/删除 阵列
-## 4.1 创建一个 raid5 阵列，由物理盘 2,3,4 构成，该阵列的热备盘是物理盘 5
+## 4.创建/删除 阵列
+### 4.1 创建一个 raid5 阵列，由物理盘 2,3,4 构成，该阵列的热备盘是物理盘 5
 
 	MegaCli -CfgLdAdd -r5 [1:2,1:3,1:4] WB Direct -Hsp[1:5] –a0
 
-## 4.2 创建阵列，不指定热备
+### 4.2 创建阵列，不指定热备
 
 	MegaCli -CfgLdAdd -r5 [1:2,1:3,1:4] WB Direct –a0
 
-## 4.3 删除阵列
+### 4.3 删除阵列
 
 	MegaCli -CfgLdDel -L1 –a0
 
-## 4.4 在线添加磁盘
+### 4.4 在线添加磁盘
 
 	MegaCli -LDRecon -Start -r5 -Add -PhysDrv[1:4] -L1 -a0
 
 意思是，重建逻辑磁盘组1，raid级别是5，添加物理磁盘号：1:4。重建完后，新添加的物理磁盘会自动处于重建(同步)状态，这个 时候 fdisk -l是看不到阵列的空间变大的，只有在系统重启后才能看见。
 
-# 5.查看阵列初始化信息
-## 5.1 阵列创建完后，会有一个初始化同步块的过程，可以看看其进度。
+## 5.查看阵列初始化信息
+### 5.1 阵列创建完后，会有一个初始化同步块的过程，可以看看其进度。
 
 	MegaCli -LDInit -ShowProg -LALL -aALL
 
@@ -116,7 +116,7 @@ categories: Linux
 
 	MegaCli -LDInit -ProgDsply -LALL –aALL
 
-## 5.2 查看阵列后台初始化进度
+### 5.2 查看阵列后台初始化进度
 
 	MegaCli -LDBI -ShowProg -LALL -aALL
 
@@ -124,7 +124,7 @@ categories: Linux
 
 	MegaCli -LDBI -ProgDsply -LALL -aALL
 
-# 6.创建全局热备
+## 6.创建全局热备
 指定第 5 块盘作为全局热备
 
 	MegaCli -PDHSP -Set [-EnclAffinity] [-nonRevertible] -PhysDrv[1:5] -a0
@@ -133,16 +133,16 @@ categories: Linux
 
 	MegaCli -PDHSP -Set [-Dedicated [-Array1]] [-EnclAffinity] [-nonRevertible] -PhysDrv[1:5] -a0
 
-# 7.删除全局热备
+## 7.删除全局热备
 
 	MegaCli -PDHSP -Rmv -PhysDrv[1:5] -a0
 
-# 8.将某块物理盘下线/上线
+## 8.将某块物理盘下线/上线
 
 	MegaCli -PDOffline -PhysDrv [1:4] -a0 
 	MegaCli -PDOnline -PhysDrv [1:4] -a0
 
-# 9.查看物理磁盘重建进度
+## 9.查看物理磁盘重建进度
 
 	MegaCli -PDRbld -ShowProg -PhysDrv [1:5] -a0
 

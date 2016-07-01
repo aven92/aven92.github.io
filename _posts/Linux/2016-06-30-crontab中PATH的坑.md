@@ -6,7 +6,7 @@ categories: Linux
 
 <!--more-->
 
-# 1. 现象
+## 1. 现象
 
 在命令行里面能正常运行脚本，在crontab里面报错：
 
@@ -14,7 +14,7 @@ lsof: No such file or directory
 
 看报错信息， 应该是找不到lsof这个命令
 
-# 2. 排查
+## 2. 排查
 
 查看lsof命令的路径：
 
@@ -34,7 +34,7 @@ lsof: No such file or directory
 
 果真是crontab的原因
 
-# 3. 原因
+## 3. 原因
 
     $ man 5 crontab
 
@@ -42,7 +42,7 @@ lsof: No such file or directory
 
 Several  environment variables are set up automatically by the cron(8) daemon.  SHELL is set to /bin/sh, and LOGNAME and HOME are set from the /etc/passwd line of the crontab's owner. PATH is set to "/usr/bin:/bin".  HOME, SHELL, and PATH may be overridden by settings in the crontab; LOGNAME is the user that the job is running from, and may not be changed.
 
-# 4. 解决办法
+## 4. 解决办法
 
 在脚本里面export PATH=/usr/sbin:$PATH, 或者把crontab改成
 

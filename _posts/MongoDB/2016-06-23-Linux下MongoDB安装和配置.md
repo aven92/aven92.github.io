@@ -6,15 +6,15 @@ categories: MongoDB
 
 <!--more-->
 
-# 1. 环境
+## 1. 环境
 
     $ cat /etc/redhat-release 
     CentOS Linux release 7.0.1406 (Core) 
     $ uname -a
     Linux zhaopin-2-201 3.10.0-123.el7.x86_64 #1 SMP Mon Jun 30 12:09:22 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
 
-# 2. 准备
-## (1) 下载包
+## 2. 准备
+### (1) 下载包
 
     $ sudo wget -c -P /opt/ https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel70-3.0.6.tgz    
     --2015-09-23 10:18:24--  https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel70-3.0.6.tgz
@@ -26,7 +26,7 @@ categories: MongoDB
     100%[======================================================================================================================================================================================================================>] 50,210,575  1.20MB/s   in 50s     
     2015-09-23 10:19:19 (978 KB/s) - ‘/opt/mongodb-linux-x86_64-rhel70-3.0.6.tgz’ saved [50210575/50210575]
 
-## (2) 环境
+### (2) 环境
 
     $ cd /opt/
     $ sudo tar -zxf mongodb-linux-x86_64-rhel70-3.0.6.tgz
@@ -56,7 +56,7 @@ categories: MongoDB
     $ mongo --version
     MongoDB shell version: 3.0.6
 
-# 3. 配置
+## 3. 配置
 
     $ sudo mkdir -p /data/mongodb/db0/{data,backup,log,conf}
     $ sudo vim /data/mongodb/db0/conf/mongodb.conf
@@ -84,7 +84,7 @@ categories: MongoDB
     verbose = false
     objcheck = false
 
-# 4. 启动
+## 4. 启动
 
     $ sudo systemctl stop firewalld.service
     $ sudo systemctl disable firewalld.service
